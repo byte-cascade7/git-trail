@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern QR Menu | Quick Order</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fffaf5; }
+        .filter-active-veg { box-shadow: 0 0 15px rgba(34, 197, 94, 0.4); border: 2px solid #22c55e; }
+        .filter-active-nonveg { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); border: 2px solid #ef4444; }
+        .food-card { transition: transform 0.2s ease-in-out; }
+        .food-card:hover { transform: translateY(-5px); }
+       
+        /* 1. CSS VARIABLES - The engine of the theme toggle */
+        :root {
+            /* Light Mode Palette */
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1b;
+            --text-muted: #6c757d;
+            --accent: #6366f1; /* Modern Indigo */
+            --nav-bg: rgba(255, 255, 255, 0.8);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.4s;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode Palette */
+            --bg-color: #0f172a; /* Deep Charcoal */
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent: #818cf8; /* Softer Indigo */
+            --nav-bg: rgba(15, 23, 42, 0.8);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 2. BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* 3. NAVIGATION */
+        nav {
+            position: sticky;
+            top: 0;
+            padding: 1rem 5%;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--accent); }
+
+        /* THEME TOGGLE SWITCH */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 50px;
+        }
+
+        .theme-switch input { display: none; }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 16px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 16px;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* 4. LAYOUT COMPONENTS */
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .hero p { color: var(--text-muted); font-size: 1.2rem; max-width: 600px; margin: 0 auto; }
+
+        
+
+
+        
+    </style>
+</head>
+<body class="pb-12">
+    <nav>
+        <div class="logo">MODERN_UI</div>
+        <div class="theme-switch-wrapper">
+            <span style="font-size: 0.8rem; font-weight: 600;">DARK MODE</span>
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider"></div>
+            </label>
+        </div>
+    </nav>
+
+    <header class="bg-white shadow-sm pt-8 pb-6 px-4 text-center border-b border-orange-100">
+        <h1 class="text-3xl font-bold text-orange-800">Bistro Moderno</h1>
+        <p class="text-gray-500 mt-2 text-sm">Scan the QR code to place your order instantly.</p>
+        
+        <div class="mt-6 inline-block bg-white p-4 rounded-2xl shadow-xl border border-gray-100">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://your-menu-link.com" alt="Menu QR Code" class="w-28 h-28 mx-auto">
+            <p class="text-[10px] uppercase tracking-widest text-gray-400 mt-2 font-semibold">Table #12</p>
+        </div>
+    </header>
+
+    <div class="sticky top-0 z-10 bg-white/80 backdrop-blur-md py-4 shadow-sm mb-8">
+        <div class="flex justify-center space-x-4">
+            <button onclick="filterMenu('veg')" id="veg-btn" class="flex items-center px-6 py-2 rounded-full border-2 border-transparent bg-white shadow-md text-sm font-semibold transition-all">
+                <span class="mr-2">🟢</span> Veg
+            </button>
+            <button onclick="filterMenu('non-veg')" id="non-veg-btn" class="flex items-center px-6 py-2 rounded-full border-2 border-transparent bg-white shadow-md text-sm font-semibold transition-all">
+                <span class="mr-2">🔴</span> Non-Veg
+            </button>
+            <button onclick="filterMenu('all')" id="all-btn" class="px-6 py-2 rounded-full border-2 border-gray-200 bg-gray-100 text-sm font-semibold transition-all">
+                Show All
+            </button>
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-4">
+        <div id="menu-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+            
+            <div class="food-card bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100" data-category="veg">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500" alt="Avocado Salad" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-gray-800">Garden Salad</h3>
+                        <span class="text-xs">🟢</span>
+                    </div>
+                    <p class="text-orange-600 font-bold mt-2">Rs 50.00</p>
+                    <button class="w-full mt-3 bg-orange-50 text-orange-700 py-2 rounded-xl text-sm font-bold active:scale-95 transition-transform">Add to Order</button>
+                </div>
+            </div>
+            
+            <div  class="food-card bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100" data-category="non-veg" >
+                
+                    
+                <img src="chicken.jpg" wide="325px" height="325px" alt="Chicken Wings" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-gray-800" >chicken</h3>
+                        <span class="text-xs" >🔴</span>
+                    </div>
+                    <p class="text-orange-600 font-bold mt-2" >Rs 215.50</p>
+                    <button class="w-full mt-3 bg-orange-50 text-orange-700 py-2 rounded-xl text-sm font-bold active:scale-95 transition-transform">Add to Order</button>
+                </div>
+         
+                <img src="fish.jpg" wide="325px" height="325px" alt="fish" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-gray-800" >fish</h3>
+                        <span class="text-xs" >🔴</span>
+                    </div>
+                    <p class="text-orange-600 font-bold mt-2" >Rs 315.50</p>
+                    <button class="w-full mt-3 bg-orange-50 text-orange-700 py-2 rounded-xl text-sm font-bold active:scale-95 transition-transform">Add to Order</button>
+                </div>
+                    
+                
+            </div>
+            
+            <div class="food-card bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100" data-category="veg">
+                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500" alt="Margarita Pizza"  class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-gray-800">Cheese Pizza</h3>
+                        <span class="text-xs">🟢</span>
+                    </div>
+                    <p class="text-orange-600 font-bold mt-2">Rs 200.00</p>
+                    <button class="w-full mt-3 bg-orange-50 text-orange-700 py-2 rounded-xl text-sm font-bold active:scale-95 transition-transform">Add to Order</button>
+                </div>
+            </div>
+
+            <div class="food-card bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100" data-category="non-veg" >
+                <img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=500" alt="Classic Burger" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-gray-800">Beef Burger</h3>
+                        <span class="text-xs">🔴</span>
+                    </div>
+                    <p class="text-orange-600 font-bold mt-2">Rs 100.00</p>
+                    <button class="w-full mt-3 bg-orange-50 text-orange-700 py-2 rounded-xl text-sm font-bold active:scale-95 transition-transform">Add to Order</button>
+                </div>
+            </div>
+
+            
+
+        </div>
+    </main>
+
+    <script>
+        function filterMenu(category) {
+            const items = document.querySelectorAll('.food-card');
+            const vegBtn = document.getElementById('veg-btn');
+            const nonVegBtn = document.getElementById('non-veg-btn');
+            
+            // Reset Button Styles
+            vegBtn.classList.remove('filter-active-veg');
+            nonVegBtn.classList.remove('filter-active-nonveg');
+
+            items.forEach(item => {
+                if (category === 'all') {
+                    item.style.display = 'block';
+                } else {
+                    if (item.getAttribute('data-category') === category) {
+                        item.style.display = 'block';
+                        // Add glow effect to active button
+                        if(category === 'veg') vegBtn.classList.add('filter-active-veg');
+                        if(category === 'non-veg') nonVegBtn.classList.add('filter-active-nonveg');
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        // JS TO HANDLE THEME SWITCHING LOGIC
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        const currentTheme = localStorage.getItem('theme');
+
+        // Check for saved user preference
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'dark') {
+                toggleSwitch.checked = true;
+            }
+        }
+
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }    
+        }
+
+        toggleSwitch.addEventListener('change', switchTheme, false);
+    </script>
+</body>
