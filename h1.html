@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Admin Dashboard</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #64748b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--dark);
+            color: var(--white);
+            height: 100vh;
+            position: fixed;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        aside.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-header {
+            padding: 2rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .menu {
+            padding: 1rem 0;
+        }
+
+        .menu-item {
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: #1e293b;
+            color: var(--white);
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+            width: 100%;
+        }
+
+        main.expanded {
+            margin-left: 0;
+        }
+
+        /* Navbar */
+        nav {
+            height: 70px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+
+        /* Dashboard Content */
+        .content-wrapper {
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+        .card-title { color: var(--secondary); font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .card-value { font-size: 1.8rem; font-weight: bold; color: var(--dark); }
+
+        /* Form and Table Section */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .table-container, .form-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th { background: #f1f5f9; font-weight: 600; }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 1024px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            aside { transform: translateX(-100%); }
+            aside.active { transform: translateX(0); }
+            main { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <div class="sidebar-header">ADMIN PRO</div>
+        <div class="menu">
+            <a href="#" class="menu-item active">Dashboard</a>
+            <a href="#" class="menu-item">Users</a>
+            <a href="#" class="menu-item">Forms</a>
+            <a href="#" class="menu-item">Orders</a>
+            <a href="#" class="menu-item">Settings</a>
+        </div>
+    </aside>
+
+    <main id="mainContent">
+        <nav>
+            <div class="nav-left">
+                <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+                <h2>Overview</h2>
+            </div>
+            <div class="nav-right">
+                <span style="font-size: 1.2rem;">🔔</span>
+                <div class="profile-img"></div>
+            </div>
+        </nav>
+
+        <div class="content-wrapper">
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-title">Total Users</div>
+                    <div class="card-value">12,450</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Orders</div>
+                    <div class="card-value">3,200</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Revenue</div>
+                    <div class="card-value">$45,210</div>
+                </div>
+            </div>
+
+            <div class="grid-layout">
+                <div class="table-container">
+                    <h3>Recent Users</h3>
+                    <input type="text" id="searchInput" class="search-bar" placeholder="Search by name..." onkeyup="searchTable()">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td>John Doe</td><td>john@example.com</td><td>Admin</td></tr>
+                            <tr><td>Jane Smith</td><td>jane@tech.com</td><td>Editor</td></tr>
+                            <tr><td>Mike Ross</td><td>mike@legal.com</td><td>User</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-container">
+                    <h3>Add New Entry</h3>
+                    <form id="dataForm" onsubmit="handleForm(event)">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="category">
+                                <option value="Admin">Admin</option>
+                                <option value="Editor">Editor</option>
+                                <option value="User">User</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">Save Entry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 768) {
+                sidebar.classList.toggle('collapsed');
+                main.classList.toggle('expanded');
+            } else {
+                sidebar.classList.toggle('active');
+            }
+        }
+
+        function searchTable() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let rows = document.getElementById('tableBody').getElementsByTagName('tr');
+
+            for (let row of rows) {
+                let nameCell = row.getElementsByTagName('td')[0];
+                if (nameCell) {
+                    let text = nameCell.textContent || nameCell.innerText;
+                    row.style.display = text.toLowerCase().indexOf(input) > -1 ? "" : "none";
+                }
+            }
+        }
+
+        function handleForm(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const category = document.getElementById('category').value;
+
+            if (name && email) {
+                const tbody = document.getElementById('tableBody');
+                const newRow = tbody.insertRow();
+                newRow.innerHTML = `<td>${name}</td><td>${email}</td><td>${category}</td>`;
+                
+                // Reset Form
+                document.getElementById('dataForm').reset();
+                alert('Data added successfully!');
+            }
+        }
+
+        // Close sidebar on mobile when window resized
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
